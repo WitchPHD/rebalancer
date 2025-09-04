@@ -5,7 +5,8 @@ This is a simple script I made while experimenting with vim to help me rebalance
 1. You must load your portfolios from a csv file. If you type "load" and hit enter it will load from "ports.csv" in its same directory. If you type "load -C /pathhere/filehere.csv" it SHOULD load your custom location file. I didn't test it. I don't know why you'd want to do that anyway. I don't know why I coded it.
 2. After loading the file you can type "rebal" and hit enter to begin rebalancing
 3. You must then enter how much money is going into the account, and how much is currently in each holding.
-4. It should output some amount of money for you to put into each file
+4. It should output some amount of money for you to put into each holding
+5. Use "exit" to close. Or put in a string at any other point IG there's no real error catching so you can just break it no big deal. 
 
 # the rebalancing methods
 1. The first balancing method is "Basic" from the command "rebal -B" - This just takes the ideal percentage of each asset and applies it directly to how much money is going in.
