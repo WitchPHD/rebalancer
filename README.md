@@ -1,5 +1,7 @@
 # rebalancer
-This is a simple script I made while experimenting with vim to help me keep my investment portfolio balanced over time by weighting how much I put into each Holding eaxh month based on its current % and its desired % (so I have to do full rebalances less often) - helpful for simple 3fund portfolios but can handle several portfolios and more holdings per portfolio
+When you rebalance your holdings in a taxable portfolio it often requires withdrawing from some assets, which created a taxable event. I try to minimize/delay this with a "rolling rebalance" where, when my monthly autodeposit goes into the cash reserve of my portfolio, I curtail how much goes into each asset based on its curret% and target%. 
+
+This is a simple script I made while experimenting with vim to help me do this. 
 
 # what to do
 1. You must load your portfolios from a csv file. If you type "load" and hit enter it will load from "ports.csv" in its same directory. If you type "load -C /pathhere/filehere.csv" it SHOULD load your custom location file. I didn't test it. I don't know why you'd want to do that anyway. I don't know why I coded it.
@@ -9,10 +11,10 @@ This is a simple script I made while experimenting with vim to help me keep my i
 5. Use "exit" to close. Or put in a string at any other point IG there's no real error catching so you can just break it no big deal. 
 
 # the rebalancing methods
-1. The first balancing method is "Basic" from the command "rebal -B" - This just takes the ideal percentage of each asset and applies it directly to how much money is going in.
+1. The first balancing method is "Basic" from the command "rebal -B" - This just takes the ideal percentage of each asset and applies it directly to how much money is going in. If you want to automate your asset purchases as well as the deposit, you can use these numbers. 
 2. The second method is "Full" from the comand "rebal -F" - This assumes that you're going to do a proper rebalance and withdraw assets from your overheld assets to add to your lower valued ones. When you get your numbers, withdraw the negative ammounts and deposit the positive ones.
 3. The third method is "Manual" from "rebal -M 0.X" - Basically you can normalize your full rebelancing by weighting it to the basic rebalancing. For example, if you want your number to be 90% from basic and 10% from full, you can use "rebal -M 0.9" The numerical argument is the normalization weight.
-4. The last method is the default and the raison d'être of this script. If you use the command "rebal" by itself or with any other arguments you'll get this. Basically I try to "rolling rebalance" weighting methods 1 and 2 until none of the numbers are negative. This reduces/delays the need for full withdrawing rebalances since you do a bit of "course correcting" over time. The script displays what % it settled on so that you can choose to do a full rebalance when the % gets higher than your liking. 
+4. The last method is the default and the raison d'être of this script. If you use the command "rebal" by itself or with any other arguments you'll get this. Basically it tries different normalization weights until none of the values are negative. If you deposit this amount into each asset, and repeat each month, it will "course correcting" a bit over time without requiring a withdrawl. The script displays what % it settled on so that you can choose to do a full rebalance when the % gets higher than your liking. 
 
 # the csv file
 1. The CSV included is a sample, but you must change it manually to fit the portfolio you have if you end up using this script
