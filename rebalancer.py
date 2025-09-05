@@ -74,6 +74,7 @@ class HOLDING:
         self.deposit = 0
         
 def load(cmd):
+    folio_list = []
     # Load portfolios from file
     directory = 'ports.csv'
     if '-C' in cmd:
