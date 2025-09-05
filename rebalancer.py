@@ -50,7 +50,7 @@ class FOLIO:
         percent = 0.0
         self.manual_balancing(percent)
         while self.is_neg():
-            percent += 0.05
+            percent += 0.02
             self.manual_balancing(percent)
         print('\t Rebalancing with a Normalization of: {:.2f}%'.format(percent*100))
 
