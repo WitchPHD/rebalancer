@@ -1,5 +1,5 @@
 # rebalancer
-When you rebalance your holdings in a taxable portfolio it often requires withdrawing from some assets, which created a taxable event. I try to minimize/delay this with a "rolling rebalance" where, when my monthly autodeposit goes into the cash reserve of my portfolio, I curtail how much goes into each asset based on its curret% and target%. 
+When you rebalance your holdings in a taxable portfolio it often requires withdrawing from some assets, which created a taxable event. I try to minimize/delay this with a "rolling rebalance" where, when my monthly autodeposit goes into the cash reserve of my portfolio, I curtail how much goes into each asset based on its curret% and target%. This is more formally known as "buy only value averaging."
 
 This is a simple script I made while experimenting with vim to help me do this. 
 
