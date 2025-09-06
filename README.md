@@ -4,7 +4,7 @@ When you rebalance your holdings in a taxable portfolio it often requires withdr
 This is a simple script I made while experimenting with vim to help me do this. 
 
 # what to do
-1. You must load your portfolios from a csv file. If you type "load" and hit enter it will load from "ports.csv" in its same directory. If you type "load -C /pathhere/filehere.csv" it SHOULD load your custom location file. I didn't test it. I don't know why you'd want to do that anyway. I don't know why I coded it.
+1. You must load your portfolios from a csv file. If you type "load" and hit enter it will load from "ports.csv" in the relative directory you're working from / cd-d into. If you type "load -C /pathhere/filehere.csv" it SHOULD load your custom location file. If the default load path is broken / you don't cd around in your terminal... just use "load -C " and then click and drag your file into the terminal window.
 2. After loading the file you can type "rebal" and hit enter to begin rebalancing
 3. You must then enter how much money is going into the account, and how much is currently in each holding.
 4. It should output some amount of money for you to put into each holding
