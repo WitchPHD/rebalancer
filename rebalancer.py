@@ -2,6 +2,7 @@ import csv
 
 folio_list = []
 interval = 0.02
+minimum_deposit = 0
 
 class FOLIO:
     # A Portfolio Class
@@ -57,7 +58,7 @@ class FOLIO:
 
     def is_neg(self):
         for holding in self.holding_list:
-            if holding.deposit < 0:
+            if holding.deposit < minimum_deposit:
                 return True
 
     def display_deposits(self):
@@ -82,7 +83,8 @@ def load(cmd):
     directory = 'ports.csv'
     if '-C' in cmd:
         directory = cmd.replace('load','')
-        directory = directory.replace('-C','')
+        directory = directory.replace('-C','') 
+        directory = directory.replace(' ','')
     print ('\tLoading from: {:}'.format(directory))
     with open(directory) as portfolio_file:
         portfolios = csv.reader(portfolio_file)
@@ -97,6 +99,12 @@ def rebalance(cmd):
         for holding in folio.holding_list:
             holding.bal = float(input('\t\tCurrent amount in {:}: '.format(holding.ticker)))
         folio.value()
+    # ask if there's a minimum amount they'd like to deposit in each account
+    global minimum_deposit
+    try:
+        minimum_deposit = float(input('\tMinimum cash amount to deposit into each asset (default 0):'))
+    except:
+        minimum_deposit = 0
     # After, do the correct balancing method based on the modifier
     for folio in folio_list:
         if '-B' in cmd:
