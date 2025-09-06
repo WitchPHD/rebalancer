@@ -1,6 +1,7 @@
 import csv
 
 folio_list = []
+interval = 0.02
 
 class FOLIO:
     # A Portfolio Class
@@ -50,7 +51,7 @@ class FOLIO:
         percent = 0.0
         self.manual_balancing(percent)
         while self.is_neg():
-            percent += 0.02
+            percent += interval
             self.manual_balancing(percent)
         print('\t Rebalancing with a Normalization of: {:.2f}%'.format(percent*100))
 
@@ -74,6 +75,8 @@ class HOLDING:
         self.deposit = 0
         
 def load(cmd):
+    #clear old data
+    global folio_list
     folio_list = []
     # Load portfolios from file
     directory = 'ports.csv'
@@ -88,12 +91,13 @@ def load(cmd):
             folio_list.append(FOLIO(row))    
 
 def rebalance(cmd):
-    # First ask for mone going in, and all current holdings amounts
+    # First ask for money going in, and all current holdings amounts
     for folio in folio_list:
         folio.deposit = float(input('\tAmount going in {:}: '.format(folio.name)))
         for holding in folio.holding_list:
             holding.bal = float(input('\t\tCurrent amount in {:}: '.format(holding.ticker)))
         folio.value()
+    # After, do the correct balancing method based on the modifier
     for folio in folio_list:
         if '-B' in cmd:
             folio.basic_balancing()
@@ -102,9 +106,17 @@ def rebalance(cmd):
             num = num.replace('-M','')
             folio.manual_balancing(float(num))
         elif '-F' in cmd:
-            folio.full_balancing()
+            folio.full_balancing() 
+        elif '-I' in cmd: 
+            num = cmd.replace('rebal','')
+            num = num.replace('-I','')
+            global interval
+            interval = float(num)
+            folio.default_balancing()
+            interval = 0.02
         else:
             folio.default_balancing()
+        # Finally, print the results
         folio.display_deposits()
 
 if __name__ == '__main__':
