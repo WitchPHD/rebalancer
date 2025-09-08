@@ -1,6 +1,8 @@
 import csv
+import copy
 
 folio_list = []
+folio_save = []
 interval = 0.02
 minimum_deposit = 0
 
@@ -103,20 +105,18 @@ def load(cmd):
         line_count = 0
         for row in portfolios:
             folio_list.append(FOLIO(row))    
-
-def rebalance(cmd):
-    # First ask for money going in, and all current holdings amounts
+    # Then ask for money going in, and all current holdings amounts
     for folio in folio_list:
         folio.deposit = float(input('\tAmount going in {:}: '.format(folio.name)))
         for holding in folio.holding_list:
             holding.bal = float(input('\t\tCurrent amount in {:}: '.format(holding.ticker)))
         folio.value()
-    # ask if there's a minimum amount they'd like to deposit in each account
-    if '-T' not in cmd:
-        try:
-            minimum_deposit = float(input('\tMinimum cash amount to deposit into each asset (default 0):'))
-        except:
-            minimum_deposit = 0
+    # Some rebalances are lossy, so generate a saved version to reload from
+    global folio_save
+    folio_save = copy.deepcopy(folio_list)
+
+def rebalance(cmd):
+    minimum_set = False
     # After, do the correct balancing method based on the modifier
     for folio in folio_list:
         if '-B' in cmd:
@@ -137,6 +137,13 @@ def rebalance(cmd):
         elif '-T' in cmd:
             folio.truncate_balancing() 
         else:
+            if not minimum_set:
+                global minimum_deposit
+                try:
+                    minimum_deposit = float(input('\tMinimum cash amount to deposit into each asset (default 0):'))
+                except:
+                    minimum_deposit = 0
+            minimum_set = True
             folio.default_balancing()
         # Finally, print the results
         folio.display_deposits()
@@ -149,5 +156,7 @@ if __name__ == '__main__':
             load(cmd)
         elif 'rebal' in cmd:
             rebalance(cmd)
+            # some rebalances are lossy, so reload save data after balancing
+            folio_list = copy.deepcopy(folio_save)
         elif 'exit' in cmd:
             exit()
