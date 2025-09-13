@@ -10,6 +10,7 @@ class FOLIO:
     # A Portfolio Class
     def __init__ (self, raw):
         self.name = raw.pop(0)
+        self.default = raw.pop(0)
         self.holding_list = []
         self.percent = 0
         self.bal = 0
@@ -23,6 +24,7 @@ class FOLIO:
             self.holding_list.append(HOLDING(name, amount))
         for holding in self.holding_list:
             self.percent += holding.ideal
+            self.bal += holding.bal
         if round(self.percent, 2) != 1:
             print('\t ## WARNING ## Your ideal percentages in {:} do not add up to 100% ({:})'.format(self.name, self.percent))
         print('\t\tPortfolio {:} has {:} holdings'.format(self.name, len(self.holding_list)))
@@ -61,7 +63,7 @@ class FOLIO:
             holding.ideal = holding.ideal / new_percent
         self.basic_balancing()
         
-    def default_balancing(self):
+    def normalize_balancing(self):
         #default zero-izing rebalancing
         percent = 0.0
         self.manual_balancing(percent)
@@ -78,9 +80,45 @@ class FOLIO:
     def display_deposits(self):
         print('\t## {:} ## '.format(self.name))
         for holding in self.holding_list:
-            print('\t\t{:} ~ ${:.0f}'.format(holding.ticker, holding.deposit))
+            print('\t\t{:} ({:.0f}%) ~ ${:.0f}'.format(holding.ticker, ((holding.bal + holding.deposit)/self.tot_in)*100, holding.deposit))
     
-
+    def view(self):
+        print('\t## {:} ## '.format(self.name))
+        for holding in self.holding_list:
+            print('\t\t{:} ({:.0f}%) ~ ${:.0f}'.format(holding.ticker, (holding.bal/self.bal)*100, holding.bal))
+    
+    def balance(self, cmd):
+        minimum_set = False
+        if '-B' in cmd:
+            self.basic_balancing()
+        elif '-M' in cmd: 
+            num = cmd.replace('rebal','')
+            num = num.replace('-M','')
+            self.manual_balancing(float(num))
+        elif '-F' in cmd:
+            self.full_balancing() 
+        elif '-I' in cmd: 
+            num = cmd.replace('rebal','')
+            num = num.replace('-I','')
+            global interval
+            interval = float(num)
+            self.default_balancing()
+            interval = 0.02
+        elif '-T' in cmd:
+            self.truncate_balancing() 
+        elif '-N' in cmd:
+            if not minimum_set:
+                global minimum_deposit
+                try:
+                    minimum_deposit = float(input('\tMinimum cash amount to deposit into each asset (default 0):'))
+                except:
+                    minimum_deposit = 0
+            minimum_set = True
+            self.normalize_balancing()
+        else:
+            cmd = self.default
+            self.balance(cmd)
+        
 class HOLDING:
     # a class for holdings in the portfolio
     def __init__ (self, ticker, amount):
@@ -107,45 +145,18 @@ def load(cmd):
             folio_list.append(FOLIO(row))    
     # Then ask for money going in, and all current holdings amounts
     for folio in folio_list:
-        folio.deposit = float(input('\tAmount going in {:}: '.format(folio.name)))
+        folio.deposit = float(input('\tAmount going in {:}: $'.format(folio.name)))
         for holding in folio.holding_list:
-            holding.bal = float(input('\t\tCurrent amount in {:}: '.format(holding.ticker)))
+            holding.bal = float(input('\t\tCurrent amount in {:}: $'.format(holding.ticker)))
         folio.value()
     # Some rebalances are lossy, so generate a saved version to reload from
     global folio_save
     folio_save = copy.deepcopy(folio_list)
 
 def rebalance(cmd):
-    minimum_set = False
-    # After, do the correct balancing method based on the modifier
     for folio in folio_list:
-        if '-B' in cmd:
-            folio.basic_balancing()
-        elif '-M' in cmd: 
-            num = cmd.replace('rebal','')
-            num = num.replace('-M','')
-            folio.manual_balancing(float(num))
-        elif '-F' in cmd:
-            folio.full_balancing() 
-        elif '-I' in cmd: 
-            num = cmd.replace('rebal','')
-            num = num.replace('-I','')
-            global interval
-            interval = float(num)
-            folio.default_balancing()
-            interval = 0.02
-        elif '-T' in cmd:
-            folio.truncate_balancing() 
-        else:
-            if not minimum_set:
-                global minimum_deposit
-                try:
-                    minimum_deposit = float(input('\tMinimum cash amount to deposit into each asset (default 0):'))
-                except:
-                    minimum_deposit = 0
-            minimum_set = True
-            folio.default_balancing()
-        # Finally, print the results
+        # Balance porftolio then display the result
+        folio.balance(cmd)
         folio.display_deposits()
 
 if __name__ == '__main__':
@@ -158,5 +169,8 @@ if __name__ == '__main__':
             rebalance(cmd)
             # some rebalances are lossy, so reload save data after balancing
             folio_list = copy.deepcopy(folio_save)
+        elif 'view' in cmd:
+            for folio in folio_list:
+                folio.view()
         elif 'exit' in cmd:
             exit()
